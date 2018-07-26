@@ -139,6 +139,8 @@
 
       utility.getNextNonce = function getNextNonce(web3, address, callback) {
         function proxy() {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -194,8 +196,10 @@
 
       utility.call = function call(web3In, contract, address, functionName, args, callback) {
         function proxy(retries) {
+          console.log("inside proxy")
           const web3 = new Web3();
           const data = contract[functionName].getData.apply(null, args);
+          console.log("we are fucked xoxox")
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -231,12 +235,14 @@
             const data = contract[functionName].getData.apply(null, args);
             web3In.eth.call({ to: address, data }, (err, result) => {
               if (!err) {
+                console.log(" xoxox no error")
                 const functionAbi = contract.abi.find(element => element.name === functionName);
                 const solidityFunction = new SolidityFunction(web3In.Eth, functionAbi, address);
                 try {
                   const resultUnpacked = solidityFunction.unpackOutput(result);
                   callback(undefined, resultUnpacked);
                 } catch (errJson) {
+                  console.log("web3 errroed "+errJson)
                   proxy(1);
                 }
               } else {
@@ -351,6 +357,7 @@
           try {
             tx = new Tx(options);
             function proxy() { // eslint-disable-line no-inner-declarations
+              console.log("inside proxy")
               utility.signTx(web3, fromAddress, tx, privateKey, (errSignTx, txSigned) => {
                 if (!errSignTx) {
                   const serializedTx = txSigned.serialize().toString('hex');
@@ -469,6 +476,8 @@
 
       utility.txReceipt = function txReceipt(web3, txHash, callback) {
         function proxy() {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -527,6 +536,8 @@
           }
         }
         function proxy(retries) {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -594,6 +605,8 @@
           return undefined;
         }
         function proxy(retries) {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -644,6 +657,8 @@
 
       utility.getBalance = function getBalance(web3, address, callback) {
         function proxy() {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -679,6 +694,8 @@
 
       utility.getCode = function getCode(web3, address, callback) {
         function proxy() {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'
@@ -714,6 +731,8 @@
 
       utility.blockNumber = function blockNumber(web3, callback) {
         function proxy() {
+          console.log("inside proxy")
+
           let url =
                     `https://${
                         config.ethTestnet ? config.ethTestnet : 'api'

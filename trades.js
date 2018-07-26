@@ -1,6 +1,6 @@
 /* eslint-env browser */
 /* global $, EJS, google */
-
+// this file is probably for local testing coz see web3 and hardcoded addressDEx
 const Web3 = require('web3');
 const BigNumber = require('bignumber.js');
 const async = require('async');
@@ -56,23 +56,29 @@ function TradeUtil() {
   };
 
   self.getContract = function getContract(callback) {
-    self.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${addressDEx}`, (err, data) => {
-      if (err) throw new Error(err);
-      const abi = JSON.parse(data.result);
-      self.contractDEx = web3.eth.contract(abi);
-      self.contractDEx = self.contractDEx.at(addressDEx);
-      callback(null, self.contractDEx);
-    });
+    self.get(
+      `https://api.etherscan.io/api?module=contract&action=getabi&address=${addressDEx}`,
+      (err, data) => {
+        if (err) throw new Error(err);
+        const abi = JSON.parse(data.result);
+        self.contractDEx = web3.eth.contract(abi);
+        self.contractDEx = self.contractDEx.at(addressDEx);
+        callback(null, self.contractDEx);
+      },
+    );
   };
 
   self.getContractToken = function getContractToken(callback) {
-    self.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${addressToken}`, (err, data) => {
-      if (err) throw new Error(err);
-      const abi = JSON.parse(data.result);
-      self.contractToken = web3.eth.contract(abi);
-      self.contractToken = self.contractToken.at(addressToken);
-      callback(null, self.contractToken);
-    });
+    self.get(
+      `https://api.etherscan.io/api?module=contract&action=getabi&address=${addressToken}`,
+      (err, data) => {
+        if (err) throw new Error(err);
+        const abi = JSON.parse(data.result);
+        self.contractToken = web3.eth.contract(abi);
+        self.contractToken = self.contractToken.at(addressToken);
+        callback(null, self.contractToken);
+      },
+    );
   };
 
   self.getBlockNumber = function getBlockNumber(callback) {
@@ -91,18 +97,12 @@ function TradeUtil() {
 
   self.getLog = function getLog(fromBlock, toBlock, callback) {
     function decodeEvent(item) {
-      const eventAbis = self.contractDEx.abi.filter(eventAbi => (
+      const eventAbis = self.contractDEx.abi.filter(
+        eventAbi =>
           eventAbi.type === 'event' &&
           item.topics[0] ===
-            `0x${
-              sha3(
-                `${eventAbi.name
-                  }(${
-                  eventAbi.inputs
-                    .map(x => x.type)
-                    .join()
-                  })`)}`
-        ));
+            `0x${sha3(`${eventAbi.name}(${eventAbi.inputs.map(x => x.type).join()})`)}`,
+      );
       if (eventAbis.length > 0) {
         const eventAbi = eventAbis[0];
         const event = new SolidityEvent(web3, eventAbi, addressDEx);
@@ -111,8 +111,7 @@ function TradeUtil() {
       }
       return null;
     }
-    const url =
-      `https://api.etherscan.io/api?module=logs&action=getLogs&address=${addressDEx}&fromBlock=${fromBlock}&toBlock=${toBlock}`;
+    const url = `https://api.etherscan.io/api?Eth_gettransactionbyhash&action=getLogs&address=${addressDEx}&fromBlock=${fromBlock}&toBlock=${toBlock}`;
     self.get(url, (err, data) => {
       if (!err) {
         try {
@@ -130,7 +129,8 @@ function TradeUtil() {
             },
             (errMap, events) => {
               callback(null, events);
-            });
+            },
+          );
         } catch (errTry) {
           callback(errTry, []);
         }
@@ -188,10 +188,12 @@ function TradeUtil() {
             self.getTokenInfo(event.args.tokenGive, (errTokenGive, tokenGive) => {
               if (!errTokenGet && !errTokenGive && tokenGet && tokenGive) {
                 try {
-                  const amountGet = event.args.amountGet
-                    .div(new BigNumber(10).pow(new BigNumber(tokenGet.decimals)));
-                  const amountGive = event.args.amountGive
-                    .div(new BigNumber(10).pow(new BigNumber(tokenGive.decimals)));
+                  const amountGet = event.args.amountGet.div(
+                    new BigNumber(10).pow(new BigNumber(tokenGet.decimals)),
+                  );
+                  const amountGive = event.args.amountGive.div(
+                    new BigNumber(10).pow(new BigNumber(tokenGive.decimals)),
+                  );
                   const trade = {
                     txHash: event.transactionHash,
                     tokenGet,
@@ -202,8 +204,10 @@ function TradeUtil() {
                     give: event.args.give,
                     date: new Date(parseInt(event.timeStamp, 16) * 1000),
                   };
-                  if ((trade.tokenGet.name === 'ETH' || trade.tokenGive.name === 'ETH')
-                   && trade.amountGive.gt(0) && trade.amountGet.gt(0)
+                  if (
+                    (trade.tokenGet.name === 'ETH' || trade.tokenGive.name === 'ETH') &&
+                    trade.amountGive.gt(0) &&
+                    trade.amountGet.gt(0)
                   ) {
                     self.tradesCache.push(trade);
                   }
@@ -222,7 +226,8 @@ function TradeUtil() {
       },
       () => {
         callback(null);
-      });
+      },
+    );
   };
 
   self.downloadTrades = function downloadTrades(kind, filter, callback) {
@@ -282,13 +287,16 @@ function TradeUtil() {
                 inputEthereumAddress: self.inputEthereumAddress,
                 inputTokenAddress: self.inputTokenAddress,
               });
-              const trades = self.tradesCache.filter(trade =>
-                (!filter.inputTokenAddress ||
-                 (trade.tokenGet.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase() ||
-                  trade.tokenGive.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase())) &&
-                (!filter.inputEthereumAddress ||
-                  (trade.get.toLowerCase() === filter.inputEthereumAddress.toLowerCase() ||
-                   trade.give.toLowerCase() === filter.inputEthereumAddress.toLowerCase())));
+              const trades = self.tradesCache.filter(
+                trade =>
+                  (!filter.inputTokenAddress ||
+                    (trade.tokenGet.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase() ||
+                      trade.tokenGive.addr.toLowerCase() ===
+                        filter.inputTokenAddress.toLowerCase())) &&
+                  (!filter.inputEthereumAddress ||
+                    (trade.get.toLowerCase() === filter.inputEthereumAddress.toLowerCase() ||
+                      trade.give.toLowerCase() === filter.inputEthereumAddress.toLowerCase())),
+              );
               trades.sort((a, b) => b.date - a.date);
 
               self.ejs('trades_progress.ejs', 'trades_progress', {
@@ -300,30 +308,25 @@ function TradeUtil() {
               callback(null, trades);
             });
           }
-        });
+        },
+      );
     });
   };
 
   self.initialize = function initialize(callback) {
-    async.parallel(
-      [
-        self.getContract,
-        self.getContractToken,
-        self.getBlockNumber,
-      ],
-      () => {
-        self.earliestBlock = self.blockNumber;
-        self.latestBlock = self.blockNumber;
-        self.ejs('trades_nav.ejs', 'trades_nav', {
-          earliestBlock: self.earliestBlock,
-          latestBlock: self.latestBlock,
-          inputEthereumAddress: self.inputEthereumAddress,
-          inputTokenAddress: self.inputTokenAddress,
-        });
-        self.downloadTrades(null, {}, () => {
-          callback();
-        });
+    async.parallel([self.getContract, self.getContractToken, self.getBlockNumber], () => {
+      self.earliestBlock = self.blockNumber;
+      self.latestBlock = self.blockNumber;
+      self.ejs('trades_nav.ejs', 'trades_nav', {
+        earliestBlock: self.earliestBlock,
+        latestBlock: self.latestBlock,
+        inputEthereumAddress: self.inputEthereumAddress,
+        inputTokenAddress: self.inputTokenAddress,
       });
+      self.downloadTrades(null, {}, () => {
+        callback();
+      });
+    });
   };
 
   self.clickEarlier = function clickEarlier() {
@@ -331,12 +334,16 @@ function TradeUtil() {
     self.inputTokenAddress = $('#inputTokenAddress').val();
     $('#clickEarlier').prop('disabled', true);
     $('#clickLater').prop('disabled', true);
-    self.downloadTrades('earlier', {
-      inputEthereumAddress: self.inputEthereumAddress,
-      inputTokenAddress: self.inputTokenAddress,
-    }, () => {
-      console.log('Downloaded trades');
-    });
+    self.downloadTrades(
+      'earlier',
+      {
+        inputEthereumAddress: self.inputEthereumAddress,
+        inputTokenAddress: self.inputTokenAddress,
+      },
+      () => {
+        console.log('Downloaded trades');
+      },
+    );
   };
 
   self.clickLater = function clickLater() {
@@ -344,38 +351,50 @@ function TradeUtil() {
     self.inputTokenAddress = $('#inputTokenAddress').val();
     $('#clickEarlier').prop('disabled', true);
     $('#clickLater').prop('disabled', true);
-    self.downloadTrades('later', {
-      inputEthereumAddress: self.inputEthereumAddress,
-      inputTokenAddress: self.inputTokenAddress,
-    }, () => {
-      console.log('Downloaded trades');
-    });
+    self.downloadTrades(
+      'later',
+      {
+        inputEthereumAddress: self.inputEthereumAddress,
+        inputTokenAddress: self.inputTokenAddress,
+      },
+      () => {
+        console.log('Downloaded trades');
+      },
+    );
   };
 
   self.clickFilter = function clickLater() {
     self.inputEthereumAddress = $('#inputEthereumAddress').val();
     self.inputTokenAddress = $('#inputTokenAddress').val();
-    self.downloadTrades(null, {
-      inputEthereumAddress: self.inputEthereumAddress,
-      inputTokenAddress: self.inputTokenAddress,
-    }, () => {
-      console.log('Filtered trades');
-    });
+    self.downloadTrades(
+      null,
+      {
+        inputEthereumAddress: self.inputEthereumAddress,
+        inputTokenAddress: self.inputTokenAddress,
+      },
+      () => {
+        console.log('Filtered trades');
+      },
+    );
   };
 
   self.drawChart = function drawChart(filter) {
     $('#trades_chart').html('');
     if (filter.inputTokenAddress) {
-      const trades = self.tradesCache.filter(trade =>
-        (!filter.inputTokenAddress ||
-         (trade.tokenGet.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase() ||
-          trade.tokenGive.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase())))
-      .sort((a, b) => a.date - b.date);
+      const trades = self.tradesCache
+        .filter(
+          trade =>
+            !filter.inputTokenAddress ||
+            (trade.tokenGet.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase() ||
+              trade.tokenGive.addr.toLowerCase() === filter.inputTokenAddress.toLowerCase()),
+        )
+        .sort((a, b) => a.date - b.date);
 
       const rows = trades.map((trade) => {
-        const price = trade.tokenGet.name === 'ETH' ?
-          trade.amountGet.div(trade.amountGive).toNumber() :
-          trade.amountGive.div(trade.amountGet).toNumber();
+        const price =
+          trade.tokenGet.name === 'ETH'
+            ? trade.amountGet.div(trade.amountGive).toNumber()
+            : trade.amountGive.div(trade.amountGet).toNumber();
         return [trade.date, price];
       });
 
@@ -442,7 +461,8 @@ function TradeUtil() {
         };
 
         const chart = new google.visualization.CandlestickChart(
-          document.getElementById('trades_chart'));
+          document.getElementById('trades_chart'),
+        );
         chart.draw(data, options);
       }
     }

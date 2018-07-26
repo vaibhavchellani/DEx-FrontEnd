@@ -1717,6 +1717,8 @@ DEx.prototype.cancelOrder = function cancelOrder(orderIn) {
   }
 };
 DEx.prototype.trade = function trade(kind, order, inputAmount) {
+  console.log("fuck")
+  
   if (this.addrs[this.selectedAccount].slice(0, 39) === '0x0000000000000000000000000000000000000') {
     this.alertError(
       "You haven't selected an account. Make sure you have an account selected from the Accounts dropdown in the upper right.");
@@ -1781,6 +1783,7 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
             r = '0x0';
             s = '0x0';
           }
+          
           utility.call(
             this.web3,
             this.contractDEx,
@@ -1802,6 +1805,21 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
             ],
             (errTestTrade, resultTestTrade) => {
               if (resultTestTrade && amount > 0) {
+                console.log("test trade passed")
+                console.log([
+                  order.tokenGet,
+                  Number(order.amountGet),
+                  order.tokenGive,
+                  Number(order.amountGive),
+                  Number(order.expires),
+                  Number(order.nonce),
+                  order.user,
+                  v,
+                  r,
+                  s,
+                  amount,
+                  { gas: 250000, value: 0 },
+                ])
                 utility.send(
                   this.web3,
                   this.contractDEx,
@@ -1819,12 +1837,13 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
                     r,
                     s,
                     amount,
-                    { gas: this.config.gasTrade, value: 0 },
+                    { gas: 250000, value: 0 },
                   ],
                   this.addrs[this.selectedAccount],
                   this.pks[this.selectedAccount],
                   this.nonce,
-                  (errSend, resultSend) => {
+                  (errSend, resultSend) => {  
+                    console.log(errSend)
                     this.nonce = resultSend.nonce;
                     this.addPending(errSend, { txHash: resultSend.txHash });
                     this.alertTxResult(errSend, resultSend);
@@ -1838,6 +1857,7 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
                   });
               } else if (utility.weiToEth(availableVolume,
               this.getDivisor(this.selectedToken)) < this.minOrderSize) {
+                console.log("panga hua ")
                 this.alertError(
                   "You cannot trade this order because it already traded. Someone else already traded this order and the order book hasn't updated yet.");
                 ga('send', {
