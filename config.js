@@ -18,7 +18,7 @@ module.exports = {
   gasWithdraw: 250000,
   gasTrade: 250000,
   gasOrder: 250000,
-  ordersOnchain: false,
+  ordersOnchain: true,
   apiServer: '',
   userCookie: 'DEx',
   eventsCacheCookie: 'DEx_eventsCache',

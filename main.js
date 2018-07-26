@@ -1605,6 +1605,7 @@ DEx.prototype.publishOrder = function publishOrder(
             });
           } else {
             // Send order to offchain book:
+            console.log("onchain order mech")
             const order = {
               contractAddr: this.config.contractDExAddr,
               tokenGet,
@@ -1716,9 +1717,7 @@ DEx.prototype.cancelOrder = function cancelOrder(orderIn) {
       });
   }
 };
-DEx.prototype.trade = function trade(kind, order, inputAmount) {
-  console.log("fuck")
-  
+DEx.prototype.trade = function trade(kind, order, inputAmount) {  
   if (this.addrs[this.selectedAccount].slice(0, 39) === '0x0000000000000000000000000000000000000') {
     this.alertError(
       "You haven't selected an account. Make sure you have an account selected from the Accounts dropdown in the upper right.");
@@ -1751,6 +1750,7 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
     [order.tokenGet, this.addrs[this.selectedAccount]],
     (err, result) => {
       const availableBalance = result;
+      console.log("available balance is "+availableBalance)
       utility.call(
         this.web3,
         this.contractDEx,
@@ -1770,11 +1770,18 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
         ],
         (errAvailableVolume, resultAvailableVolume) => {
           const availableVolume = resultAvailableVolume;
+          console.log(availableVolume)
+          console.log("value of amount")
+          console.log(amount)
           if (amount.gt(availableBalance.divToInt(1.0031))) {
             // balance adjusted for fees (0.0001 to avoid rounding error)
-            amount = availableBalance.divToInt(1.0031);
+            console.log("inside if amount set")
+            amount = availableBalance.divToInt(1.0031); 
+            console.log(amount)
           }
           if (amount.gt(availableVolume)) amount = availableVolume;
+          console.log("amount again")
+          console.log(amount)
           let v = Number(order.v);
           let r = order.r;
           let s = order.s;
@@ -1804,6 +1811,10 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
               this.addrs[this.selectedAccount],
             ],
             (errTestTrade, resultTestTrade) => {
+              console.log("attention")
+              console.log(errTestTrade)
+              console.log(resultTestTrade)
+              console.log(amount)
               if (resultTestTrade && amount > 0) {
                 console.log("test trade passed")
                 console.log([
@@ -1820,6 +1831,22 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
                   amount,
                   { gas: 250000, value: 0 },
                 ])
+                console.log([
+                  typeof order.tokenGet,
+                  typeof Number(order.amountGet),
+                  typeof order.tokenGive,
+                  typeof Number(order.amountGive),
+                  typeof Number(order.expires),
+                  typeof Number(order.nonce),
+                  typeof order.user,
+                  typeof v,
+                  typeof r,
+                  typeof s,
+                  typeof amount,
+                  { gas: 250000, value: 0 },
+                ])
+                console.log("nonce is ")
+                console.log(this.nonce)
                 utility.send(
                   this.web3,
                   this.contractDEx,
@@ -1858,6 +1885,11 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
               } else if (utility.weiToEth(availableVolume,
               this.getDivisor(this.selectedToken)) < this.minOrderSize) {
                 console.log("panga hua ")
+                console.log(availableVolume)
+                console.log(this.getDivisor(this.selectedToken))
+                console.log(utility.weiToEth(availableVolume,
+                  this.getDivisor(this.selectedToken)))
+                console.log(this.minOrderSize)
                 this.alertError(
                   "You cannot trade this order because it already traded. Someone else already traded this order and the order book hasn't updated yet.");
                 ga('send', {
@@ -1868,6 +1900,7 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
                   eventValue: inputAmount,
                 });
               } else {
+                console.log("inside else")
                 this.alertError(
                   "You cannot trade this order because you don't have enough funds. Please DEPOSIT first using the Deposit form in the upper left. Enter the amount you want to deposit and press the 'Deposit' button.");
                 ga('send', {

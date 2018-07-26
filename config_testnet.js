@@ -6,7 +6,7 @@ module.exports = {
   contractToken: 'smart_contract/token.sol',
   contractReserveToken: 'smart_contract/reservetoken.sol',
   contractDExAddrs: [
-    { addr: '0x9fad94a68efac5d15d25ccc413aede563f23095a', info: 'Deployed 07/26/2018' },
+    { addr: '0x9fd34ab744cf3e73bae24991749dd2e7b64c5e17', info: 'Deployed 07/26/2018' },
     { addr: '0x0def463933c4e286c79f517d7aa56c43bc25323b', info: 'Deployed 07/24/2018' },
     { addr: '0x51ba4d11f6ed41748f8ebcb1890efb6d3e369f59', info: 'Deployed 04/16/2018' },
     { addr: '0x0000000000000000000000000000000000000000', info: 'Zero contract' },
@@ -22,7 +22,7 @@ module.exports = {
   gasWithdraw: 250000,
   gasTrade: 250000,
   gasOrder: 250000,
-  ordersOnchain: false,
+  ordersOnchain: true,
   apiServer: 'http://localhost:9000',
   userCookie: 'DEx',
   eventsCacheCookie: 'DEx_eventsCache',
