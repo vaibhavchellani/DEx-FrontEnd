@@ -19,7 +19,7 @@ module.exports = {
   gasTrade: 250000,
   gasOrder: 250000,
   ordersOnchain: false,
-  apiServer: '',
+  apiServer: 'http:localhost:9000',
   userCookie: 'DEx',
   eventsCacheCookie: 'DEx_eventsCache',
   deadOrdersCacheCookie: 'DEx_deadOrdersCache',

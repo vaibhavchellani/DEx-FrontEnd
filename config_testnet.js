@@ -10,7 +10,7 @@ module.exports = {
         { addr: '0x0000000000000000000000000000000000000000', info: 'Zero contract' },
   ],
   ethTestnet: 'ropsten',
-  ethProvider: 'https://testgeth.karachainfoundation.org',
+  ethProvider: 'https://ropsten.infura.io/TJSJL5u9maRXnaZrSvnv',
   ethGasPrice: 20000000000,
   ethAddr: '0x0000000000000000000000000000000000000000',
   ethAddrPrivateKey: '',
@@ -20,7 +20,7 @@ module.exports = {
   gasTrade: 250000,
   gasOrder: 250000,
   ordersOnchain: false,
-  apiServer: 'https://dex-api.karachainfoundation.org',
+  apiServer: 'http://localhost:9000',
   userCookie: 'DEx',
   eventsCacheCookie: 'DEx_eventsCache',
   deadOrdersCacheCookie: 'DEx_deadOrdersCache',
@@ -30,10 +30,16 @@ module.exports = {
         { addr: '0x0000000000000000000000000000000000000000', name: 'ETH', decimals: 18 },
         { addr: '0x54477a3abc9355711bce1c7f150e9129090dcdce', name: 'VAIB', decimals: 18 },
         { addr: '0xa431133d469a128da33a978afcc4e4b75ccb3bb4', name: 'SPC', decimals: 18 },
+    {
+      addr: '0x61d43db420fbdad90476887c30df9e4ec39be7a0',
+      name: 'MTX',
+      decimals: 18,
+    },
   ],
   defaultPair: { token: 'VAIB', base: 'ETH' },
   pairs: [
         { token: 'VAIB', base: 'ETH' },
         { token: 'SPC', base: 'ETH' },
+        { token: 'MTX', base: 'ETH' }
   ],
 };

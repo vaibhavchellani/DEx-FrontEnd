@@ -1802,6 +1802,21 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
             ],
             (errTestTrade, resultTestTrade) => {
               if (resultTestTrade && amount > 0) {
+                console.log('trade happening ');
+                console.log([
+                  order.tokenGet,
+                  Number(order.amountGet),
+                  order.tokenGive,
+                  Number(order.amountGive),
+                  Number(order.expires),
+                  Number(order.nonce),
+                  order.user,
+                  v,
+                  r,
+                  s,
+                  amount,
+                    { gas: this.config.gasTrade, value: 0 },
+                ]);
                 utility.send(
                   this.web3,
                   this.contractDEx,
