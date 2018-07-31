@@ -201,9 +201,7 @@
           const data = contract[functionName].getData.apply(null, args);
           console.log("we are fucked xoxox")
           let url =
-                    `https://${
-                        config.ethTestnet ? config.ethTestnet : 'api'
-                        }.etherscan.io/api?module=proxy&action=eth_Call&to=${
+                    `https://localhost:9000/api?module=proxy&action=eth_Call&to=${
                         address
                         }&data=${
                         data}`;
