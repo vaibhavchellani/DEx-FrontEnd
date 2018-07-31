@@ -1329,6 +1329,9 @@ DEx.prototype.deposit = function deposit(addr, inputAmount) {
             this.nonce = resultSend.nonce;
             this.addPending(errSend, { txHash: resultSend.txHash });
             this.alertTxResult(errSend, resultSend);
+            //this.refresh(() => {});
+            //setTimeout(function() { this.refresh(() => {}); }, 1*1000);
+            setTimeout( this.displayAllBalances() , 2*1000)
             ga('send', {
               hitType: 'event',
               eventCategory: 'Action',
@@ -1380,11 +1383,14 @@ DEx.prototype.deposit = function deposit(addr, inputAmount) {
                 this.addrs[this.selectedAccount],
                 this.pks[this.selectedAccount],
                 this.nonce,
+
                 (errSend2, resultSend2) => {
                   this.nonce = resultSend2.nonce;
                   txs.push(resultSend2);
                   this.addPending(errSend || errSend2, txs);
                   this.alertTxResult(errSend || errSend2, txs);
+                  setTimeout( this.displayAllBalances() , 2*1000)
+                  
                   ga('send', {
                     hitType: 'event',
                     eventCategory: 'Action',
@@ -2313,7 +2319,7 @@ DEx.prototype.refreshLoop = function refreshLoop() {
   const self = this;
   function loop() {
     self.refresh(() => {
-      setTimeout(loop, 60 * 1000);
+      setTimeout(loop, 3 * 1000);
     });
   }
   loop();
