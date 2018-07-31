@@ -1880,6 +1880,7 @@ DEx.prototype.trade = function trade(kind, order, inputAmount) {
                     this.nonce = resultSend.nonce;
                     this.addPending(errSend, { txHash: resultSend.txHash });
                     this.alertTxResult(errSend, resultSend);
+                    setTimeout( this.displayAllBalances() , 2*1000)
                     ga('send', {
                       hitType: 'event',
                       eventCategory: 'Action',
